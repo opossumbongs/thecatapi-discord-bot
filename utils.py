@@ -1,5 +1,6 @@
 import requests
 import random
+from bs4 import BeautifulSoup
 from datetime import datetime
 
 # API wrapper for https://thecatapi.com
@@ -11,15 +12,12 @@ class Cat():
         self.token = 'enter-token-here'
 
     # Fetching image
-    def image(self, **args):
-        breed = args.get('breed', None)
-        limit = args.get('limit', 1)
-
+    def image(self, *, breed):
         if breed:
             r = requests.get(f'https://api.thecatapi.com/v1/images/search?mime_types=jpg,png&breed_ids={breed}', headers={'x-api-key': random.choice(self.keyList)})
             return r.json()
         else:
-            r = requests.get(f'https://api.thecatapi.com/v1/images/search?mime_types=jpg,png&limit={limit}', headers={'x-api-key': random.choice(self.keyList)})
+            r = requests.get('https://api.thecatapi.com/v1/images/search?mime_types=jpg,png', headers={'x-api-key': random.choice(self.keyList)})
             return r.json()
 
     # Fetching gif
@@ -29,8 +27,9 @@ class Cat():
             return r.json()
         else:
             r = requests.get('https://edgecats.net/all')
-            gifLinks = [i.split('href="')[1].split('"')[0] for i in r.text.splitlines() if 'href="' in i]
-            return random.choice(gifLinks)
+            soup = BeautifulSoup(r.text)
+            gifLinks = soup.findAll('a', href=True)
+            return random.choice(gifLinks).get('href')
 
     # Fetching fact
     def fact(self):

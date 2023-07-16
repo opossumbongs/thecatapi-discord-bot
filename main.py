@@ -5,9 +5,10 @@ import asyncio
 import json
 import os
 import discord
-from datetime import datetime
+import datetime
 from discord.ext import tasks, commands
 from utils import Cat, Logger
+
 
 # <-- Classes -->
 class Bot(commands.Bot):
@@ -15,7 +16,9 @@ class Bot(commands.Bot):
         super().__init__(intents=discord.Intents.default(), command_prefix='')
 
     async def setup_hook(self):
-        [await self.load_extension(f'commands.{os.path.splitext(i)[0]}') for i in os.listdir('commands') if i.endswith('.py')]
+        for file in os.listdir('commands'):
+            if file.endswith('.py'):
+                self.load_extension(f'commands.{os.path.splitext(file)[0]}')
 
         await bot.tree.sync()
 
@@ -50,12 +53,12 @@ async def scrapeVideos():
             'videos': []
         }
 
-    for i, r in enumerate(responses):
+    for index, response in enumerate(responses):
         try:
-            subData = r.json()['data']['children']
+            subData = response.json()['data']['children']
 
-            for i in subData:
-                obj = i['data']
+            for item in subData:
+                obj = item['data']
 
                 if not obj['is_video']:
                     continue
@@ -72,14 +75,14 @@ async def scrapeVideos():
                 )
 
         except Exception:
-            log.error(f"Error scraping videos from r/{cat.subList[i]}.")
+            log.error(f"Error scraping videos from r/{cat.subList[index]}.")
 
     with open('data.json', 'w', encoding='utf8') as f:
         f.write(json.dumps(data))
 
     log.success('Finished scraping videos from Reddit!')
 
-@tasks.loop(hours=1)
+@tasks.loop(hours=1, time=datetime.time(hour=datetime.datetime.now().hour + 1, minute=0))
 async def hourlyPhoto():
     log.info('Sending photos to webhooks.')
 
@@ -109,7 +112,7 @@ async def hourlyPhoto():
         result = requests.post(url, json=postData)
 
         if result.status_code == 404:
-            log.error(f'Error sending photo to webhook. Removing from schedule')
+            log.error('Error sending photo to webhook. Removing from schedule')
             data['webhooks'].pop(i)
 
         await asyncio.sleep(2.5)
@@ -129,15 +132,5 @@ headers = {
     'Accept-Language': 'en-US,en;q=0.5',
     'User-Agent': 'Cat Bot - https://github.com/paintingofblue/thecatapi-discord-bot'
 }
-
-# This is to ensure that the hourly cat photo
-# is sent at the same time every hour
-log.warning('Waiting for the next hour to start.')
-previousHour = datetime.now()
-
-while True:
-    currentHour = datetime.now()
-    if currentHour.hour != previousHour.hour:
-        break
 
 bot.run(cat.token)
