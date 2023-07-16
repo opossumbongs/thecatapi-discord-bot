@@ -90,11 +90,10 @@ async def hourlyPhoto():
         data = json.load(f)
 
     pfp = bot.user.display_avatar
-
     image = cat.image()[0]['url']
-    for i in dict(data['webhooks']):
-        url = data['webhooks'][i]
 
+    for index in dict(data['webhooks']):
+        url = data['webhooks'][index]
         postData = {
             "username": "Cat Bot",
             "avatar_url": pfp,
@@ -112,8 +111,15 @@ async def hourlyPhoto():
         result = requests.post(url, json=postData)
 
         if result.status_code == 404:
-            log.error('Error sending photo to webhook. Removing from schedule')
-            data['webhooks'].pop(i)
+            log.error('Error sending hourly photo: Webhook not found.')
+            log.info('Removing webhook from schedule.')
+            data['webhooks'].pop(index)
+        elif result.status_code == 429:
+            log.error('Error sending hourly photo: Rate limited.')
+            log.info('Retrying in 10 seconds.')
+            await asyncio.sleep(10)
+
+            requests.post(url, json=postData)
 
         await asyncio.sleep(2.5)
 
@@ -127,9 +133,6 @@ bot = Bot()
 cat = Cat()
 log = Logger()
 headers = {
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
-    'Accept-Encoding': 'gzip, deflate, br',
-    'Accept-Language': 'en-US,en;q=0.5',
     'User-Agent': 'Cat Bot - https://github.com/paintingofblue/thecatapi-discord-bot'
 }
 
