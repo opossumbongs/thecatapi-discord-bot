@@ -27,7 +27,7 @@ class Cat():
                 return response
 
     # Fetching image
-    async def image(self, *, breed: Optional[str]):
+    async def image(self, *, breed: Optional[str] = None):
         if breed:
             response = await self.make_request(f'images/search?mime_types=jpg,png&breed_ids={breed}', headers={'x-api-key': random.choice(self.keyList)})
             return await response.json()

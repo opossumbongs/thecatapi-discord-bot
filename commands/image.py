@@ -11,7 +11,10 @@ class Image(commands.Cog):
     @discord.app_commands.command(name = 'image', description = 'Sends a cat image.')
     async def image(self, interaction: discord.Interaction, breed: str = None):
         if not breed:
-            image = await cat.image()[0]['url']
+            img_obj = await cat.image()
+            print(img_obj)
+            image = img_obj[0]['url']
+            print(image)
 
             embed = discord.Embed(title="Here's a cat image:", color=discord.Colour(cat.embedColor))
             embed.set_image(url=image)

@@ -91,9 +91,9 @@ async def scrapeVideos():
 # Hourly cat photo using the /schedule command
 # I need to use a separate task for this because I can't mix relative time and explicit time
 # Discord.py moment
-@tasks.loop(time=datetime.time(hour=datetime.datetime.now().hour + 1, minute=0))
-async def hourlyPhotoStarter():
-    hourlyPhoto.start()
+# @tasks.loop(time=datetime.time(hour=datetime.datetime.now().hour + 1, minute=0))
+# async def hourlyPhotoStarter():
+#     hourlyPhoto.start()
 
 @tasks.loop(hours=1)
 async def hourlyPhoto():
