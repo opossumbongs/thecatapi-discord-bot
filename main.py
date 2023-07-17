@@ -26,16 +26,18 @@ class Bot(commands.Bot):
         await self.wait_until_ready()
         print(f'Logged in as {self.user}.')
 
-        hourlyPhoto.start()
+        hourlyPhotoStarter.start()
         scrapeVideos.start()
         rpc.start()
 
 # <-- Tasks -->
+# Task to change the presence of the bot every minute to the current server count
 @tasks.loop(minutes=1)
 async def rpc():
     activity = discord.Activity(type=discord.ActivityType.listening, name=f"/help in {len(bot.guilds)} servers")
     await bot.change_presence(activity=activity)
 
+# Task to scrape videos from a variety of different subreddits
 @tasks.loop(hours=1)
 async def scrapeVideos():
     log.info('Scraping videos from Reddit.')
@@ -82,7 +84,14 @@ async def scrapeVideos():
 
     log.success('Finished scraping videos from Reddit!')
 
-@tasks.loop(hours=1, time=datetime.time(hour=datetime.datetime.now().hour + 1, minute=0))
+# Hourly cat photo using the /schedule command
+# I need to use a separate task for this because I can't mix relative time and explicit time
+# Discord.py moment
+@tasks.loop(time=datetime.time(hour=datetime.datetime.now().hour + 1, minute=0))
+async def hourlyPhotoStarter():
+    hourlyPhoto.start()
+
+@tasks.loop(hours=1)
 async def hourlyPhoto():
     log.info('Sending photos to webhooks.')
 

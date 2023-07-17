@@ -122,7 +122,7 @@ class breeds(commands.Cog):
 
     async def breeds(self, interaction: discord.Interaction, type: discord.app_commands.Choice[str], breed: str = ''):
         breeds = cat.get_breeds()
-        breedIDs = [i['id'] for i in breeds]
+        breedIDs = [breed['id'] for breed in breeds]
 
         if type.value == 'Information':
             if breed in breedIDs:
@@ -140,11 +140,11 @@ class breeds(commands.Cog):
             embeds = []
             count = 0
 
-            for i in range(0, len(breeds), 10):
+            for num in range(0, len(breeds), 10):
                 count += 1
                 embed = discord.Embed(title='Breed List', description=f'The bot currently supports a total of {len(breeds)} breeds.\nTo get any information about the breeds listed below, you can run the </breeds:1> command and select either "information" or "statistics".', color=discord.Colour(cat.embedColor))
 
-                for breed in breeds[i:i+10]:
+                for breed in breeds[num:num+10]:
                     embed.add_field(name=breed['name'], value=breed['id'], inline=True)
 
                 embed.set_footer(text=f'Page {count} of {len(breeds) // 10 + 1}')
@@ -152,8 +152,8 @@ class breeds(commands.Cog):
 
             images = cat.image(limit=len(embeds))
 
-            for i in range(len(embeds)):
-                embeds[i].set_image(url=images[i]['url'])
+            for index in range(len(embeds)):
+                embeds[index].set_image(url=images[index]['url'])
 
             await interaction.response.send_message(embed=embeds[0], view=Pages(interaction, embeds))
 
