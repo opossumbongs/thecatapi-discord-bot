@@ -19,14 +19,15 @@ class Bot(commands.Bot):
         log.info('Loading commands...')
         for file in os.listdir('commands'):
             if file.endswith('.py'):
-                self.load_extension(f'commands.{os.path.splitext(file)[0]}')
+                await self.load_extension(f'commands.{os.path.splitext(file)[0]}')
         log.success('Finished loading commands!')
 
         log.info('Syncing slash commands...')
         await bot.tree.sync()
-        log.info('Finished syncing slash commands!')
+        log.success('Finished syncing slash commands!')
 
     async def on_ready(self):
+        await self.wait_until_ready()
         log.success(f'Successfully logged in as {self.user}')
 
         hourlyPhotoStarter.start()
@@ -102,7 +103,7 @@ async def hourlyPhoto():
         data = json.load(f)
 
     pfp = bot.user.display_avatar
-    image = cat.image()[0]['url']
+    image = await cat.image()[0]['url']
 
     for index in dict(data['webhooks']):
         url = data['webhooks'][index]

@@ -1,5 +1,6 @@
 import os
 import requests
+import aiohttp
 import random
 from pathlib import Path
 from bs4 import BeautifulSoup
@@ -10,24 +11,35 @@ from typing import Optional, Union
 class Cat():
     def __init__(self):
         self.embedColor = 0x3498DB
+        self.baseURL = 'https://api.thecatapi.com/v1/'
         self.subList = ['IllegallySmolCats', 'cats', 'Catloaf', 'Catswithjobs', 'WhatsWrongWithYourCat', 'blackcats', 'CatSlaps', 'SupermodelCats', 'CatsStandingUp', 'bigcatgifs', 'catbellies', 'catpictures', 'catpranks', 'catsareliquid', 'catsinsinks', 'catsinbusinessattire', 'catswhoyell', 'catswithjobs', 'cattaps', 'catsisuottafo', 'blep', 'fromkittentocat', 'holdmycatnip', 'jellybeantoes', 'kittens', 'kitting', 'kneadycats', 'mainecoons', 'murdermittens', 'nebelung', 'petthedamncat', 'pocketpussy', 'ragdolls', 'startledcats', 'stuffoncats', 'teefies', 'thecattrapisworking', 'tightpussy', 'toebeans', 'tuckedinkitties']
-        self.keyList = ['enter-keys-here']
-        self.token = 'enter-token-here'
+        self.keyList = ['']
+        self.token = ''
+
+    async def make_request(self, url: str, method: str='GET', headers: dict = None) -> aiohttp.ClientResponse:
+        headers['User-Agent'] = 'Cat Bot - https://github.com/paintingofblue/thecatapi-discord-bot'
+
+        if not url.startswith('https://'):
+            url = f'{self.baseURL}{url}'
+
+        async with aiohttp.ClientSession() as session:
+            async with session.request(method, url, headers=headers) as response:
+                return response
 
     # Fetching image
-    def image(self, *, breed: Optional[str]):
+    async def image(self, *, breed: Optional[str]):
         if breed:
-            response = requests.get(f'https://api.thecatapi.com/v1/images/search?mime_types=jpg,png&breed_ids={breed}', headers={'x-api-key': random.choice(self.keyList)})
-            return response.json()
+            response = await self.make_request(f'images/search?mime_types=jpg,png&breed_ids={breed}', headers={'x-api-key': random.choice(self.keyList)})
+            return await response.json()
         else:
-            response = requests.get('https://api.thecatapi.com/v1/images/search?mime_types=jpg,png', headers={'x-api-key': random.choice(self.keyList)})
-            return response.json()
+            response = await self.make_request('images/search?mime_types=jpg,png', headers={'x-api-key': random.choice(self.keyList)})
+            return await response.json()
 
     # Fetching gif
-    def gif(self):
+    async def gif(self):
         if random.randint(1, 2) == 1:
-            response = requests.get('https://api.thecatapi.com/v1/images/search?mime_types=gif', headers={'x-api-key': random.choice(self.keyList)})
-            return response.json()
+            response = await self.make_request('images/search?mime_types=gif', headers={'x-api-key': random.choice(self.keyList)})
+            return await response.json()
         else:
             response = requests.get('https://edgecats.net/all')
             soup = BeautifulSoup(response.text)
@@ -35,20 +47,20 @@ class Cat():
             return random.choice(gifLinks).get('href')
 
     # Fetching fact
-    def fact(self):
+    async def fact(self):
         response = requests.get('https://gist.githubusercontent.com/paintingofblue/657d0c4d1202374889ce4a98a6b7f35f/raw/catfacts.txt')
         facts = response.text.splitlines()
         return facts
 
     # Fetching breeds
-    def get_breeds(self):
-        response = requests.get('https://api.thecatapi.com/v1/breeds', headers={'x-api-key': random.choice(self.keyList)})
-        return response.json()
+    async def get_breeds(self):
+        response = await self.make_request('breeds', headers={'x-api-key': random.choice(self.keyList)})
+        return await response.json()
 
     # Fetching info about a specific breed
-    def get_breed_info(self, breedid: Union[int, str]):
-        response = requests.get(f'https://api.thecatapi.com/v1/breeds/{breedid}', headers={'x-api-key': random.choice(self.keyList)})
-        return response.json()
+    async def get_breed_info(self, breedid: Union[int, str]):
+        response = await self.make_request(f'breeds/{breedid}', headers={'x-api-key': random.choice(self.keyList)})
+        return await response.json()
 
 # Logger
 class Logger:

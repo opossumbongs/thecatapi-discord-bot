@@ -54,7 +54,7 @@ class Pages(discord.ui.View):
 
     async def interaction_check(self, interaction: discord.Interaction):
         if interaction.user.id != self.interaction.user.id:
-            image = cat.image()[0]['url']
+            image = await cat.image()[0]['url']
 
             embed = discord.Embed(title='Error', description="You can't use this button because you didn't start the command. Try running </breeds:1> and selecting \"list\".", color=discord.Colour.red())
             embed.set_image(url=image)
@@ -65,8 +65,8 @@ class Pages(discord.ui.View):
             return True
 
 async def getBreedInfo(interaction, breed):
-    image = cat.image(breed=breed)[0]['url']
-    breedData = cat.get_breed_info(breed)
+    image = await cat.image(breed=breed)[0]['url']
+    breedData = await cat.get_breed_info(breed)
 
     embed = discord.Embed(title=breedData['name'], description=breedData['description'], color=discord.Colour(cat.embedColor))
     embed.add_field(name='Stats', value=f'''
@@ -80,8 +80,8 @@ async def getBreedInfo(interaction, breed):
     await interaction.response.send_message(embed=embed)
 
 async def getBreedStats(interaction, breed):
-    image = cat.image(breed=breed)[0]['url']
-    breedData = cat.get_breed_info(breed)
+    image = await cat.image(breed=breed)[0]['url']
+    breedData = await cat.get_breed_info(breed)
 
     embed=discord.Embed(title=breedData['name'], color=discord.Colour(cat.embedColor))
     embed.add_field(name='Adaptability', value=f'{greenStar * breedData["adaptability"]}{blackStar * (5 - breedData["adaptability"])}', inline=True)
@@ -101,7 +101,7 @@ async def getBreedStats(interaction, breed):
     await interaction.response.send_message(embed=embed)
 
 async def handleError(interaction):
-    image = cat.image()[0]['url']
+    image = await cat.image()[0]['url']
 
     embed = discord.Embed(title='Error', description="This breed doesn't exist.\nPlease check you entered the corresponding 4 letter code for your chosen breed by running </breeds:1> and selecting \"list\".",color=discord.Colour.red())
     embed.set_image(url=image)
@@ -121,7 +121,7 @@ class breeds(commands.Cog):
     ])
 
     async def breeds(self, interaction: discord.Interaction, type: discord.app_commands.Choice[str], breed: str = ''):
-        breeds = cat.get_breeds()
+        breeds = await cat.get_breeds()
         breedIDs = [breed['id'] for breed in breeds]
 
         if type.value == 'Information':
@@ -150,7 +150,7 @@ class breeds(commands.Cog):
                 embed.set_footer(text=f'Page {count} of {len(breeds) // 10 + 1}')
                 embeds.append(embed)
 
-            images = cat.image(limit=len(embeds))
+            images = await cat.image(limit=len(embeds))
 
             for index in range(len(embeds)):
                 embeds[index].set_image(url=images[index]['url'])

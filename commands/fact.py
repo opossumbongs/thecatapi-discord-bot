@@ -11,7 +11,7 @@ class Fact(commands.Cog):
 
     @discord.app_commands.command(name = 'fact', description = 'Sends a fact about cats.')
     async def fact(self, interaction: discord.Interaction):
-        image = cat.image()[0]['url']
+        image = await cat.image()[0]['url']
         fact = random.choice(cat.fact())
 
         embed=discord.Embed(title="Here's a cat fact:", description=fact, color=discord.Colour(cat.embedColor))
