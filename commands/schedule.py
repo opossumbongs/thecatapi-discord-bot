@@ -3,10 +3,8 @@ import json
 from discord.ext import commands
 from utils import Cat
 
-# Variables
 cat = Cat()
 
-# Command
 class Schedule(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -18,7 +16,6 @@ class Schedule(commands.Cog):
         discord.app_commands.Choice(name='remove', value='Remove'),
         discord.app_commands.Choice(name='view', value='View')
     ])
-
     async def schedule(self, interaction: discord.Interaction, type: discord.app_commands.Choice[str], webhook: str = ''):
         webhook = webhook.strip()
 
@@ -90,6 +87,5 @@ async def handleResponse(interaction, type, text):
     embed.set_image(url=image)
     await interaction.response.send_message(embed=embed, ephemeral=True)
 
-# Cog setup
 async def setup(bot: commands.Bot):
     await bot.add_cog(Schedule(bot))

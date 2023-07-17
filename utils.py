@@ -38,7 +38,7 @@ class Cat():
     def fact(self):
         response = requests.get('https://gist.githubusercontent.com/paintingofblue/657d0c4d1202374889ce4a98a6b7f35f/raw/catfacts.txt')
         facts = response.text.splitlines()
-        return random.choice(facts)
+        return facts
 
     # Fetching breeds
     def get_breeds(self):
@@ -51,10 +51,6 @@ class Cat():
         return response.json()
 
 # Logger
-import os
-from datetime import datetime
-from pathlib import Path
-
 class Logger:
     def __init__(self):
         self.red = '\033[91m'

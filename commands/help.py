@@ -2,16 +2,13 @@ import discord
 from discord.ext import commands
 from utils import Cat
 
-# Variables
 cat = Cat()
 
-# Command
 class Help(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     @discord.app_commands.command(name = 'help', description = 'Sends a list of commands.')
-
     async def help(self, interaction: discord.Interaction):
         image = cat.image()[0]['url']
 
@@ -28,6 +25,5 @@ class Help(commands.Cog):
 
         await interaction.response.send_message(embed=embed)
 
-# Cog setup
 async def setup(bot: commands.Bot):
     await bot.add_cog(Help(bot))

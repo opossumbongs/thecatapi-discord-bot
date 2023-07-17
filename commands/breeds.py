@@ -2,12 +2,11 @@ import discord
 from discord.ext import commands
 from utils import Cat
 
-# Variables
 cat = Cat()
 greenStar = ':green_square:'
 blackStar = ':black_large_square:'
 
-# Buttons
+# Buttons for `/breeds list`
 class Pages(discord.ui.View):
     def __init__(self, interaction: discord.Interaction, pages: list):
         super().__init__(timeout=None)
@@ -65,7 +64,6 @@ class Pages(discord.ui.View):
         else:
             return True
 
-# Command
 async def getBreedInfo(interaction, breed):
     image = cat.image(breed=breed)[0]['url']
     breedData = cat.get_breed_info(breed)
@@ -159,6 +157,5 @@ class breeds(commands.Cog):
 
             await interaction.response.send_message(embed=embeds[0], view=Pages(interaction, embeds))
 
-# Cog setup
 async def setup(bot: commands.Bot):
     await bot.add_cog(breeds(bot))

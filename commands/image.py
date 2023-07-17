@@ -2,16 +2,13 @@ import discord
 from discord.ext import commands
 from utils import Cat
 
-# Variables
 cat = Cat()
 
-# Command
 class Image(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     @discord.app_commands.command(name = 'image', description = 'Sends a cat image.')
-
     async def image(self, interaction: discord.Interaction, breed: str = None):
         if not breed:
             image = cat.image()[0]['url']
@@ -35,6 +32,5 @@ class Image(commands.Cog):
 
         await interaction.response.send_message(embed=embed)
 
-# Cog setup
 async def setup(bot: commands.Bot):
     await bot.add_cog(Image(bot))

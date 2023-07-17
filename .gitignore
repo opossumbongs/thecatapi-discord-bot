@@ -5,4 +5,5 @@ data.json
 __pycache__/
 *.py[cod]
 
+# Log directory
 logs/
