@@ -4,3 +4,5 @@ data.json
 # Stupid pycache shit
 __pycache__/
 *.py[cod]
+
+logs/
