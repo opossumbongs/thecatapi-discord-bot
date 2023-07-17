@@ -13,18 +13,21 @@ from utils import Cat, Logger
 # <-- Classes -->
 class Bot(commands.Bot):
     def __init__(self):
-        super().__init__(intents=discord.Intents.default(), command_prefix='')
+        super().__init__(intents=discord.Intents.default(), command_prefix="")
 
     async def setup_hook(self):
+        log.info('Loading commands...')
         for file in os.listdir('commands'):
             if file.endswith('.py'):
                 self.load_extension(f'commands.{os.path.splitext(file)[0]}')
+        log.success('Finished loading commands!')
 
+        log.info('Syncing slash commands...')
         await bot.tree.sync()
+        log.info('Finished syncing slash commands!')
 
     async def on_ready(self):
-        await self.wait_until_ready()
-        print(f'Logged in as {self.user}.')
+        log.success(f'Successfully logged in as {self.user}')
 
         hourlyPhotoStarter.start()
         scrapeVideos.start()
@@ -145,4 +148,8 @@ headers = {
     'User-Agent': 'Cat Bot - https://github.com/paintingofblue/thecatapi-discord-bot'
 }
 
-bot.run(cat.token)
+try:
+    log.info('Logging in to Discord...')
+    bot.run(cat.token, log_handler=None)
+except Exception as e:
+    log.error(f'An error has occurred when logging into Discord: {e}')
