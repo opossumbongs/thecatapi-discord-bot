@@ -36,16 +36,17 @@ class Cat():
         self.keyList = ['']
         self.token = ''
 
-    async def make_request(self, url: str, method: str='GET', headers: dict = None) -> aiohttp.ClientResponse:
-        if headers is None:
-            headers = {}
+    async def make_request(self, url: str, method: str='GET', headers: dict = {}, data: dict = {}, json: dict = {}) -> aiohttp.ClientResponse:
         headers['User-Agent'] = 'Cat Bot - https://github.com/paintingofblue/thecatapi-discord-bot'
 
         if not url.startswith('https://'):
             url = f'{self.baseURL}{url}'
 
         session = aiohttp.ClientSession()
-        response = await session.request(method, url, headers=headers)
+        if method == 'POST':
+            response = await session.request(method, url, headers=headers, data=data, json=json)
+        else:
+            response = await session.request(method, url, headers=headers)
         await session.close()
         return response
 
