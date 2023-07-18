@@ -76,7 +76,8 @@ async def viewWebhook(interaction: discord.Interaction):
 
 # Function to handle responses so my code doesn't look unnecessarily bloated
 async def handleResponse(interaction, type, text):
-    image = await cat.image()[0]['url']
+    img_obj = await cat.image()
+    img = img_obj[0]['url']
     embed = discord.Embed(title=type, description=text)
 
     if type == 'Success':
@@ -84,7 +85,7 @@ async def handleResponse(interaction, type, text):
     elif type == 'Error':
         embed.color = discord.Colour.red()
 
-    embed.set_image(url=image)
+    embed.set_image(url=img)
     await interaction.response.send_message(embed=embed, ephemeral=True)
 
 async def setup(bot: commands.Bot):

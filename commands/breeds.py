@@ -54,10 +54,11 @@ class Pages(discord.ui.View):
 
     async def interaction_check(self, interaction: discord.Interaction):
         if interaction.user.id != self.interaction.user.id:
-            image = await cat.image()[0]['url']
+            img_obj = await cat.image()
+            img = img_obj[0]['url']
 
             embed = discord.Embed(title='Error', description="You can't use this button because you didn't start the command. Try running </breeds:1> and selecting \"list\".", color=discord.Colour.red())
-            embed.set_image(url=image)
+            embed.set_image(url=img)
 
             await interaction.response.send_message(embed=embed, ephemeral=True)
             return False
@@ -65,46 +66,50 @@ class Pages(discord.ui.View):
             return True
 
 async def getBreedInfo(interaction, breed):
-    image = await cat.image(breed=breed)[0]['url']
-    breedData = await cat.get_breed_info(breed)
+    img_obj = await cat.image()
+    breed_obj = await cat.get_breed_info(breed)
+    img = img_obj[0]['url']
 
-    embed = discord.Embed(title=breedData['name'], description=breedData['description'], color=discord.Colour(cat.embedColor))
+    embed = discord.Embed(title=breed_obj['name'], description=breed_obj['description'], color=discord.Colour(cat.embedColor))
     embed.add_field(name='Stats', value=f'''
-**Weight**\n{breedData['weight']['imperial']} lbs / {breedData['weight']['metric']} kg\n
-**Temperament**\n{breedData['temperament']}\n
-**Origin**\n{breedData['origin']}\n
-**Life Span**\n{breedData['life_span']} years\n
-**Wikipedia URL**\n{breedData['wikipedia_url']}\n''', inline=True)
-    embed.set_image(url=image)
+**Weight**\n{breed_obj['weight']['imperial']} lbs / {breed_obj['weight']['metric']} kg\n
+**Temperament**\n{breed_obj['temperament']}\n
+**Origin**\n{breed_obj['origin']}\n
+**Life Span**\n{breed_obj['life_span']} years\n
+**Wikipedia URL**\n{breed_obj['wikipedia_url']}\n''', inline=True)
+    embed.set_image(url=img)
 
     await interaction.response.send_message(embed=embed)
 
 async def getBreedStats(interaction, breed):
-    image = await cat.image(breed=breed)[0]['url']
-    breedData = await cat.get_breed_info(breed)
+    img_obj = await cat.image()
+    breed_obj = await cat.get_breed_info(breed)
+    img = img_obj[0]['url']
 
-    embed=discord.Embed(title=breedData['name'], color=discord.Colour(cat.embedColor))
-    embed.add_field(name='Adaptability', value=f'{greenStar * breedData["adaptability"]}{blackStar * (5 - breedData["adaptability"])}', inline=True)
-    embed.add_field(name='Affection Level', value=f'{greenStar * breedData["affection_level"]}{blackStar * (5 - breedData["affection_level"])}', inline=True)
-    embed.add_field(name='Child Friendly', value=f'{greenStar * breedData["child_friendly"]}{blackStar * (5 - breedData["child_friendly"])}', inline=True)
-    embed.add_field(name='Dog Friendly', value=f'{greenStar * breedData["dog_friendly"]}{blackStar * (5 - breedData["dog_friendly"])}', inline=True)
-    embed.add_field(name='Energy Level', value=f'{greenStar * breedData["energy_level"]}{blackStar * (5 - breedData["energy_level"])}', inline=True)
-    embed.add_field(name='Grooming', value=f'{greenStar * breedData["grooming"]}{blackStar * (5 - breedData["grooming"])}', inline=True)
-    embed.add_field(name='Health Issues', value=f'{greenStar * breedData["health_issues"]}{blackStar * (5 - breedData["health_issues"])}', inline=True)
-    embed.add_field(name='Intelligence', value=f'{greenStar * breedData["intelligence"]}{blackStar * (5 - breedData["intelligence"])}', inline=True)
-    embed.add_field(name='Shedding Level', value=f'{greenStar * breedData["shedding_level"]}{blackStar * (5 - breedData["shedding_level"])}', inline=True)
-    embed.add_field(name='Social Needs', value=f'{greenStar * breedData["social_needs"]}{blackStar * (5 - breedData["social_needs"])}', inline=True)
-    embed.add_field(name='Stranger Friendly', value=f'{greenStar * breedData["stranger_friendly"]}{blackStar * (5 - breedData["stranger_friendly"])}', inline=True)
-    embed.add_field(name='Vocalisation', value=f'{greenStar * breedData["vocalisation"]}{blackStar * (5 - breedData["vocalisation"])}', inline=True)
-    embed.set_image(url=image)
+
+    embed=discord.Embed(title=breed_obj['name'], color=discord.Colour(cat.embedColor))
+    embed.add_field(name='Adaptability', value=f'{greenStar * breed_obj["adaptability"]}{blackStar * (5 - breed_obj["adaptability"])}', inline=True)
+    embed.add_field(name='Affection Level', value=f'{greenStar * breed_obj["affection_level"]}{blackStar * (5 - breed_obj["affection_level"])}', inline=True)
+    embed.add_field(name='Child Friendly', value=f'{greenStar * breed_obj["child_friendly"]}{blackStar * (5 - breed_obj["child_friendly"])}', inline=True)
+    embed.add_field(name='Dog Friendly', value=f'{greenStar * breed_obj["dog_friendly"]}{blackStar * (5 - breed_obj["dog_friendly"])}', inline=True)
+    embed.add_field(name='Energy Level', value=f'{greenStar * breed_obj["energy_level"]}{blackStar * (5 - breed_obj["energy_level"])}', inline=True)
+    embed.add_field(name='Grooming', value=f'{greenStar * breed_obj["grooming"]}{blackStar * (5 - breed_obj["grooming"])}', inline=True)
+    embed.add_field(name='Health Issues', value=f'{greenStar * breed_obj["health_issues"]}{blackStar * (5 - breed_obj["health_issues"])}', inline=True)
+    embed.add_field(name='Intelligence', value=f'{greenStar * breed_obj["intelligence"]}{blackStar * (5 - breed_obj["intelligence"])}', inline=True)
+    embed.add_field(name='Shedding Level', value=f'{greenStar * breed_obj["shedding_level"]}{blackStar * (5 - breed_obj["shedding_level"])}', inline=True)
+    embed.add_field(name='Social Needs', value=f'{greenStar * breed_obj["social_needs"]}{blackStar * (5 - breed_obj["social_needs"])}', inline=True)
+    embed.add_field(name='Stranger Friendly', value=f'{greenStar * breed_obj["stranger_friendly"]}{blackStar * (5 - breed_obj["stranger_friendly"])}', inline=True)
+    embed.add_field(name='Vocalisation', value=f'{greenStar * breed_obj["vocalisation"]}{blackStar * (5 - breed_obj["vocalisation"])}', inline=True)
+    embed.set_image(url=img)
 
     await interaction.response.send_message(embed=embed)
 
 async def handleError(interaction):
-    image = await cat.image()[0]['url']
+    img_obj = await cat.image()
+    img = img_obj[0]['url']
 
     embed = discord.Embed(title='Error', description="This breed doesn't exist.\nPlease check you entered the corresponding 4 letter code for your chosen breed by running </breeds:1> and selecting \"list\".",color=discord.Colour.red())
-    embed.set_image(url=image)
+    embed.set_image(url=img)
 
     await interaction.response.send_message(embed=embed)
 

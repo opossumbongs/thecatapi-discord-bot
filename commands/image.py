@@ -12,27 +12,28 @@ class Image(commands.Cog):
     async def image(self, interaction: discord.Interaction, breed: str = None):
         if not breed:
             img_obj = await cat.image()
-            print(img_obj)
-            image = img_obj[0]['url']
-            print(image)
+            img = img_obj[0]['url']
 
             embed = discord.Embed(title="Here's a cat image:", color=discord.Colour(cat.embedColor))
-            embed.set_image(url=image)
+            embed.set_image(url=img)
         else:
             breeds = await cat.get_breeds()
             breedIDs = [breed['id'] for breed in breeds]
 
             if breed in breedIDs:
-                image = await cat.image(breed=breed)[0]['url']
-                breedname = await cat.get_breed_info(breed)['name']
+                img_obj = await cat.image(breed=breed)
+                breed_obj = await cat.get_breed_info(breed)
+                img = img_obj[0]['url']
+                breedname = breed_obj['name']
 
                 embed = discord.Embed(title="Here's a cat image:", description = f'Breed: {breedname}', color=discord.Colour(cat.embedColor))
-                embed.set_image(url=image)
+                embed.set_image(url=img)
             else:
-                image = await cat.image()[0]['url']
+                img_obj = await cat.image()
+                img = img_obj[0]['url']
 
                 embed = discord.Embed(title='Error', description = "This breed doesn't exist. Please check your spelling and try again.", color=discord.Colour.red())
-                embed.set_image(url=image)
+                embed.set_image(url=img)
 
         await interaction.response.send_message(embed=embed)
 

@@ -6,6 +6,26 @@ from pathlib import Path
 from bs4 import BeautifulSoup
 from datetime import datetime
 from typing import Optional, Union
+from functools import lru_cache, wraps
+from datetime import datetime, timedelta
+
+def timed_lru_cache(hours: int, maxsize: int = None):
+    def wrapper_cache(func):
+        func = lru_cache(maxsize=maxsize)(func)
+        func.lifetime = timedelta(hours=hours)
+        func.expiration = datetime.utcnow() + func.lifetime
+
+        @wraps(func)
+        def wrapped_func(*args, **kwargs):
+            if datetime.utcnow() >= func.expiration:
+                func.cache_clear()
+                func.expiration = datetime.utcnow() + func.lifetime
+
+            return func(*args, **kwargs)
+
+        return wrapped_func
+
+    return wrapper_cache
 
 # API wrapper for https://thecatapi.com
 class Cat():
@@ -17,22 +37,26 @@ class Cat():
         self.token = ''
 
     async def make_request(self, url: str, method: str='GET', headers: dict = None) -> aiohttp.ClientResponse:
+        if headers is None:
+            headers = {}
         headers['User-Agent'] = 'Cat Bot - https://github.com/paintingofblue/thecatapi-discord-bot'
 
         if not url.startswith('https://'):
             url = f'{self.baseURL}{url}'
 
-        async with aiohttp.ClientSession() as session:
-            async with session.request(method, url, headers=headers) as response:
-                return response
+        session = aiohttp.ClientSession()
+        response = await session.request(method, url, headers=headers)
+        await session.close()
+        return response
+
 
     # Fetching image
-    async def image(self, *, breed: Optional[str] = None):
+    async def image(self, *, breed: Optional[str] = None, amount: Optional[int] = 1):
         if breed:
-            response = await self.make_request(f'images/search?mime_types=jpg,png&breed_ids={breed}', headers={'x-api-key': random.choice(self.keyList)})
+            response = await self.make_request(f'images/search?mime_types=jpg,png&breed_ids={breed}&limit={amount}', headers={'x-api-key': random.choice(self.keyList)})
             return await response.json()
         else:
-            response = await self.make_request('images/search?mime_types=jpg,png', headers={'x-api-key': random.choice(self.keyList)})
+            response = await self.make_request(f'images/search?mime_types=jpg,png&limit={amount}', headers={'x-api-key': random.choice(self.keyList)})
             return await response.json()
 
     # Fetching gif
@@ -41,14 +65,14 @@ class Cat():
             response = await self.make_request('images/search?mime_types=gif', headers={'x-api-key': random.choice(self.keyList)})
             return await response.json()
         else:
-            response = requests.get('https://edgecats.net/all')
-            soup = BeautifulSoup(response.text)
+            response = await self.make_request('https://edgecats.net/all')
+            soup = BeautifulSoup(response.text, features='html.parser')
             gifLinks = soup.findAll('a', href=True)
             return random.choice(gifLinks).get('href')
 
     # Fetching fact
-    async def fact(self):
-        response = requests.get('https://gist.githubusercontent.com/paintingofblue/657d0c4d1202374889ce4a98a6b7f35f/raw/catfacts.txt')
+    async def facts(self):
+        response = await self.make_request('https://gist.githubusercontent.com/paintingofblue/657d0c4d1202374889ce4a98a6b7f35f/raw/catfacts.txt')
         facts = response.text.splitlines()
         return facts
 
@@ -61,6 +85,7 @@ class Cat():
     async def get_breed_info(self, breedid: Union[int, str]):
         response = await self.make_request(f'breeds/{breedid}', headers={'x-api-key': random.choice(self.keyList)})
         return await response.json()
+
 
 # Logger
 class Logger:

@@ -10,7 +10,8 @@ class Help(commands.Cog):
 
     @discord.app_commands.command(name = 'help', description = 'Sends a list of commands.')
     async def help(self, interaction: discord.Interaction):
-        image = await cat.image()[0]['url']
+        img_obj = await cat.image()
+        img = img_obj[0]['url']
 
         embed=discord.Embed(title='Help', description='This bot was made by [@gifkitties](https://twitter.com/gifkitties) on Twitter, and the source code can be found [here](https://github.com/paintingofblue/thecatapi-discord-bot).\n\nHere are the commands that Cat Bot currently supports:\n', color=discord.Colour(cat.embedColor))
 
@@ -21,7 +22,7 @@ class Help(commands.Cog):
         embed.add_field(name='Breeds', value='Provides information or statistics about a specific cat breed, or lists all supported cat breeds for the bot.', inline=False)
         embed.add_field(name='Schedule', value='The bot will send a message hourly with a random cat photo once provided with a Discord Webhook.', inline=False)
         embed.add_field(name='Help', value='Sends a list of commands.', inline=False)
-        embed.set_image(url=image)
+        embed.set_image(url=img)
 
         await interaction.response.send_message(embed=embed)
 

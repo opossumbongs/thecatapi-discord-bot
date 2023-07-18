@@ -30,7 +30,7 @@ class Bot(commands.Bot):
         await self.wait_until_ready()
         log.success(f'Successfully logged in as {self.user}')
 
-        hourlyPhotoStarter.start()
+        # hourlyPhotoStarter.start()
         scrapeVideos.start()
         rpc.start()
 
@@ -103,7 +103,8 @@ async def hourlyPhoto():
         data = json.load(f)
 
     pfp = bot.user.display_avatar
-    image = await cat.image()[0]['url']
+    img_obj = await cat.image()
+    img = img_obj[0]['url']
 
     for index in dict(data['webhooks']):
         url = data['webhooks'][index]
@@ -115,7 +116,7 @@ async def hourlyPhoto():
                     "title": "Hourly Cat Photo",
                     "color": 0x3498DB,
                     "image": {
-                        "url": image
+                        "url": img
                     }
                 }
             ]
