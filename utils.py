@@ -71,8 +71,14 @@ class Cat():
             gifLinks = soup.findAll('a', href=True)
             return random.choice(gifLinks).get('href')
 
+    # Fetching a video (this is used in tandem with cobalt and reddit)
+    async def video(self, url: str) -> str:
+        # use cobalt's api by wukko
+        # need to do some logic for passing in the post url & then fetch the video with audio from cobalt
+        pass
+
     # Fetching fact
-    async def facts(self):
+    async def facts(self) -> list:
         response = await self.make_request('https://gist.githubusercontent.com/paintingofblue/657d0c4d1202374889ce4a98a6b7f35f/raw/catfacts.txt')
         facts = response.text.splitlines()
         return facts
