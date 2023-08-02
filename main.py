@@ -1,14 +1,13 @@
 # <-- Imports -->
 import grequests
-import requests
 import asyncio
 import json
 import os
 import discord
 import datetime
 from discord.ext import tasks, commands
-from utils import Cat, Logger
-
+from utils.api import Cat
+from utils.logger import Logger
 
 # <-- Classes -->
 class Bot(commands.Bot):
@@ -22,17 +21,17 @@ class Bot(commands.Bot):
                 await self.load_extension(f'commands.{os.path.splitext(file)[0]}')
         log.success('Finished loading commands!')
 
+    async def on_ready(self):
+        await self.wait_until_ready()
         log.info('Syncing slash commands...')
         await bot.tree.sync()
         log.success('Finished syncing slash commands!')
 
-    async def on_ready(self):
-        await self.wait_until_ready()
         log.success(f'Successfully logged in as {self.user}')
 
         # hourlyPhotoStarter.start()
-        scrapeVideos.start()
-        rpc.start()
+        # scrapeVideos.start()
+        # rpc.start()
 
 # <-- Tasks -->
 # Task to change the presence of the bot every minute to the current server count
@@ -122,7 +121,7 @@ async def hourlyPhoto():
             ]
         }
 
-        result = requests.post(url, json=postData)
+        result = await cat.make_request('POST', url, json=postData)
 
         if result.status_code == 404:
             log.error('Error sending hourly photo: Webhook not found.')
@@ -133,7 +132,7 @@ async def hourlyPhoto():
             log.info('Retrying in 10 seconds.')
             await asyncio.sleep(10)
 
-            requests.post(url, json=postData)
+            await cat.make_request('POST', url, json=postData)
 
         await asyncio.sleep(2.5)
 
@@ -152,6 +151,6 @@ headers = {
 
 try:
     log.info('Logging in to Discord...')
-    bot.run(cat.token, log_handler=None)
+    bot.run(cat.token)
 except Exception as e:
     log.error(f'An error has occurred when logging into Discord: {e}')

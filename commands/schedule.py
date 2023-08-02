@@ -1,7 +1,7 @@
 import discord
 import json
 from discord.ext import commands
-from utils import Cat
+from utils.api import Cat
 
 cat = Cat()
 
