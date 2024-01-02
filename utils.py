@@ -7,8 +7,8 @@ class Cat():
     def __init__(self):
         self.embedColor = 0x3498DB
         self.subList = ['IllegallySmolCats', 'cats', 'Catloaf', 'Catswithjobs', 'WhatsWrongWithYourCat', 'blackcats', 'CatSlaps', 'SupermodelCats', 'CatsStandingUp', 'bigcatgifs', 'catbellies', 'catpictures', 'catpranks', 'catsareliquid', 'catsinsinks', 'catsinbusinessattire', 'catswhoyell', 'catswithjobs', 'cattaps', 'catsisuottafo', 'blep', 'fromkittentocat', 'holdmycatnip', 'jellybeantoes', 'kittens', 'kitting', 'kneadycats', 'mainecoons', 'murdermittens', 'nebelung', 'petthedamncat', 'pocketpussy', 'ragdolls', 'startledcats', 'stuffoncats', 'teefies', 'thecattrapisworking', 'tightpussy', 'toebeans', 'tuckedinkitties']
-        self.keyList = ['enter-keys-here']
-        self.token = 'enter-token-here'
+        self.keyList = ['live_WLSIacNZfU2ZhLa771d0fJsHNg2p0yeZmwzotmEYofQFSxo0L437fm0N18F8awel']
+        self.token = 'NTk5NjQ5MzgwNjMwMjY1ODg3.Grx1r-.2FZQIvJTFXfF2n6BarSDOMGdc_kW-l3i9L2_UA'
 
     # Fetching image
     def image(self, **args):
